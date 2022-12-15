@@ -65,7 +65,7 @@ byte_to_sector (const struct inode *inode, off_t pos) {
 cluster_t 
 sector_to_cluster(disk_sector_t sector){
 	struct inode *inode;
-	return inode->data.start +  sector * inode->sector; 
+	return inode->data.start -  sector * SECTORS_PER_CLUSTER; 
 }
 
 /* List of open inodes, so that opening a single inode twice
