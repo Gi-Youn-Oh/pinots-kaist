@@ -59,14 +59,16 @@ filesys_done (void) {
  * or if internal memory allocation fails. */
 bool
 filesys_create (const char *name, off_t initial_size, bool isdir) {
-	disk_sector_t inode_sector = 0;
+	cluster_t clst = fat_create_chain(0);
+	disk_sector_t inode_sector = cluster_to_sector(clst);
 	struct dir *dir = dir_open_root ();
 	bool success = (dir != NULL
-			&& free_map_allocate (1, &inode_sector)
+			// && free_map_allocate (1, &inode_sector)
 			&& inode_create (inode_sector, initial_size, isdir)
 			&& dir_add (dir, name, inode_sector));
 	if (!success && inode_sector != 0)
-		free_map_release (inode_sector, 1);
+		fat_remove_chain(clst,0);
+		// free_map_release (inode_sector, 1);
 	dir_close (dir);
 
 	return success;
