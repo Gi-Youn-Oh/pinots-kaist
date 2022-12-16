@@ -185,40 +185,50 @@ fat_create_chain (cluster_t clst) {
 	return index;
 }
 
+void print_fat(){
+	printf("\n===================print FAT====================================================================================\n");
+	for(int i = 0; i < fat_fs->bs.fat_sectors; i++){
+		printf(" [%4d|%10d] ", i, fat_fs->fat[i]);
+		if(i%5 == 4) printf("\n");
+	}
+	printf("\n================================================================================================================\n");
+}
+
 /* Remove the chain of clusters starting from CLST.*/
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
     /* TODO: Your code goes here. */
 	cluster_t next_clst;
-	// if(pclst!=0){
-	// 	while (true){
-	// 		next_clst = fat_get(clst);
-	// 		fat_put(clst,0);
-	// 		if(next_clst==EOChain)
-	// 			break;
-	// 		clst = next_clst;
-	// 	}
-	// 	fat_put(pclst,EOChain);
-	// } 
-	else if(pclst == 0){
-		for (clst; fat_get(clst)!=EOChain; clst=next_clst){
+	// print_fat();
+	if(pclst!=0){
+		while (true){
 			next_clst = fat_get(clst);
 			fat_put(clst,0);
-			printf("clst%d\n",clst);
+			if(next_clst==EOChain)
+				break;
+			clst = next_clst;
 		}
-		// while (true){
-		// 	// printf("clst%d\n", clst);
-		// 	// fat_put(clst,0);
-		// 	// clst = fat_get(clst);
-		// 	next_clst = fat_get(clst);
-		// 	fat_put(clst,0);
-		// 	clst = next_clst;
-		// 	if(next_clst == EOChain){
-		// 		printf("cl13123st%d\n", clst);
-		// 	printf("pcls223132131t%d\n", pclst);
-		// 		break;
-		// 	}				
-		// }
+		fat_put(pclst,EOChain);
+	} 
+	else if(pclst == 0){
+	// 	for (clst; fat_get(clst)!=EOChain; clst=next_clst){
+	// 		next_clst = fat_get(clst);
+	// 		fat_put(clst,0);
+	// 		// printf("clst%d\n",clst);
+	// 	}
+		while (true){
+			// printf("clst%d\n", clst);
+			// fat_put(clst,0);
+			// clst = fat_get(clst);
+			next_clst = fat_get(clst);
+			fat_put(clst,0);
+			clst = next_clst;
+			if(next_clst == EOChain){
+			// 	printf("cl13123st%d\n", clst);
+			// printf("pcls223132131t%d\n", pclst);
+				break;
+			}				
+		}
 	}
 }
 
