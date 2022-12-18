@@ -211,26 +211,26 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 		fat_put(pclst,EOChain);
 	} 
 	else if(pclst == 0){
+		while (true){
+			// printf("value=%d\n",fat_get(clst));
+			// printf("pclst =%d\n",pclst);
+			// printf("clst =%d\n",clst);
+			next_clst = fat_get(clst);
+			fat_put(clst,0);
+			clst = next_clst;
+			if(next_clst == EOChain){
+				break;
+			}				
+		// print_fat();
+		}
+	}
+}
+
 	// 	for (clst; fat_get(clst)!=EOChain; clst=next_clst){
 	// 		next_clst = fat_get(clst);
 	// 		fat_put(clst,0);
 	// 		// printf("clst%d\n",clst);
 	// 	}
-		while (true){
-			// printf("clst%d\n", clst);
-			// fat_put(clst,0);
-			// clst = fat_get(clst);
-			next_clst = fat_get(clst);
-			fat_put(clst,0);
-			clst = next_clst;
-			if(next_clst == EOChain){
-			// 	printf("cl13123st%d\n", clst);
-			// printf("pcls223132131t%d\n", pclst);
-				break;
-			}				
-		}
-	}
-}
 
 /* Update a value in the FAT table. */
 void

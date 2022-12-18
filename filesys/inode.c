@@ -197,8 +197,9 @@ inode_close (struct inode *inode) {
 
 		/* Deallocate blocks if removed. */
 		if (inode->removed) {
-			// printf("inode start%d\n", sector_to_cluster(inode->sector));
-			// printf("inode start%d\n", sector_to_cluster(inode->data.start));
+			// printf("inode sector%d\n", sector_to_cluster(inode->sector));
+			// printf("inode datastart%d\n", sector_to_cluster(inode->data.start));
+			
 			fat_remove_chain (sector_to_cluster(inode->sector), 0);
 			fat_remove_chain (sector_to_cluster(inode->data.start),0); 
 		}
