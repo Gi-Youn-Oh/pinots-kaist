@@ -10,8 +10,8 @@
 struct fat_boot {
 	unsigned int magic;
 	unsigned int sectors_per_cluster; /* Fixed to 1 */
-	unsigned int total_sectors;
-	unsigned int fat_start;
+	unsigned int total_sectors;			// disk의 섹터 개수 (즉 디스크의 크기 disk_size(filesys_disk))
+	unsigned int fat_start;				
 	unsigned int fat_sectors; /* Size of FAT in sectors. */
 	unsigned int root_dir_cluster;
 };
@@ -153,7 +153,10 @@ fat_boot_create (void) {
 void
 fat_fs_init (void) {
 	/* TODO: Your code goes here. */
+	// FAT 섹터수 * 512bytes / cluster 당 섹터 수 
 	fat_fs->fat_length = fat_fs->bs.fat_sectors * DISK_SECTOR_SIZE/(sizeof(cluster_t)*SECTORS_PER_CLUSTER);
+
+	// data섹터가 시작하는 지점 
 	fat_fs->data_start = fat_fs->bs.fat_start+fat_fs->bs.fat_sectors;
 }
 
