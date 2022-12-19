@@ -41,6 +41,8 @@ struct inode {
  * INODE.
  * Returns -1 if INODE does not contain data for a byte at offset
  * POS. */
+// byte_to_sector()는 인자로 받은 inode와 offset에 대해 해당 inode를 갖고 있는 섹터를 반환하는 함수다. 파일은 하나 이상의 섹터에 쪼개져서 저장될 것이다. 수정 전 함수를 보면, 파일이 디스크 내에서 연속적으로 섹터에 저장되는 형식이었다. 이제 FAT 테이블을 이용해 index 방식으로 여기저기 흩어진 섹터에 파일을 저장하는 방식으로 바뀌었으니 여기서도 수정해준다.
+// 해당 inode가 들어있는 섹터를 sector_to_cluster()로 가져온다. for문을 돌면서 FAT 테이블에서 해당 섹터에 도달할 때까지 i값을 올린다. 굳이 for문을 도는 이유는, FAT 테이블에 들어있는 value는 다음 섹터 위치이기 때문에 반드시 해당 value를 방문해야 다음 섹터 위치를 알 수 있기 때문이다. i가 해당 위치(pos/DISK_SECTOR_SIZE)에 도달하면 그때의 클러스터 번호를 받아서 cluster_to_sector()로 섹터 값을 반환한다.
 static disk_sector_t
 byte_to_sector (const struct inode *inode, off_t pos) {
 	ASSERT (inode != NULL);
@@ -77,6 +79,8 @@ inode_init (void) {
  * Returns true if successful.
  * Returns false if memory or disk allocation fails. */
 
+// inode를 생성할 때 이전 과제에서 구현했던 fat_create_chain()을 호출한다. 파일이 섹터에 다 들어갈 때까지 for문을 돌면서 FAT 테이블 내에 빈 클러스터를 불러와 파일 크기에 맞는 클러스터 체인을 만들어준다. 이때는 값을 써주는 게 아니라 여기저기 흩어져 있는 섹터를 하나씩 불러 파일 크기에 맞게 chain으로 연결해주는 작업만 해준다.
+// for문으로 여기저기 흩어져있는 섹터들을 하나의 체인으로 연결하고 나면, 이제 FAT 테이블에는 다음 클러스터 번호가 입력되어 있을 것이다. 이제 한 번 더 for문을 돌며 disk_write()를 호출해 클러스터에 해당 파일을 써준다. 이후는 원래 코드와 동일하다.
 bool
 inode_create (disk_sector_t sector, off_t length) {
 	struct inode_disk *disk_inode = NULL;
@@ -424,10 +428,7 @@ inode_write_at (struct inode *inode, const void *buffer_, off_t size,
 				// 	memset (bounce + sector_ofs + chunk_size + 1, 'EOF', 1);
 
 				// #ifdef DBG
-				/*
-				inode_write_at에서, extend한 맨 마지막 chunk에 EOF 표시를 해줄 필요가 있나? 
-				그리고 'EOF'는 character가 아니라 memset엔 못쓸텐데, 고쳐야 하는거 맞지?
-				*/
+	
 			#endif
 			
 			disk_write (filesys_disk, sector_idx, bounce); 
