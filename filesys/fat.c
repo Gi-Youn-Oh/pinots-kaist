@@ -168,6 +168,8 @@ fat_fs_init (void) {
  * If CLST is 0, start a new chain.
  * Returns 0 if fails to allocate a new cluster. */
 
+// cluster number가 0인경우 새로운 체인을 형성해야 하기 때문에 EOChain 을 넣어 준 뒤 해당 index값 리턴
+// 기존 chain이 존재할 경우 빈 곳에 EOChain을 새롭게 넣어주고 기존 EOChain을 찾아서 새롭게 EOChain을 넣어준 index값을 가리키도록 설정
 cluster_t
 fat_create_chain (cluster_t clst) {
 	/* TODO: Your code goes here. */
@@ -182,12 +184,13 @@ fat_create_chain (cluster_t clst) {
 	}
 	while (fat_get(clst) != EOChain)
 	{
-		clst = fat_get(clst);
+		clst = fat_get(clst);  
 	}
 	fat_put(clst,index);
 	return index;
 }
 
+// FAT 확인용 print 함수
 void print_fat(){
 	printf("\n===================print FAT====================================================================================\n");
 	for(int i = 0; i < fat_fs->bs.fat_sectors; i++){
@@ -198,6 +201,9 @@ void print_fat(){
 }
 
 /* Remove the chain of clusters starting from CLST.*/
+
+// chain삭제시 중간부터 시작하면 (pclst !=0) pclst에 EOChain을 넣어주고 나머지 삭제 
+// pclst = 0 이면 첫 clst부터 시작 이기 때문에 EOChain까지 0을 넣어주면 삭제 완료
 void
 fat_remove_chain (cluster_t clst, cluster_t pclst) {
     /* TODO: Your code goes here. */
@@ -236,6 +242,7 @@ fat_remove_chain (cluster_t clst, cluster_t pclst) {
 	// 	}
 
 /* Update a value in the FAT table. */
+// fat 의 index(clst)에value(val)값을 넣어주는 함수 
 void
 fat_put (cluster_t clst, cluster_t val) {
 	/* TODO: Your code goes here. */
@@ -243,6 +250,7 @@ fat_put (cluster_t clst, cluster_t val) {
 	fat_fs->fat[clst] = val;
 }
 
+// fat의 index(clst)에 value값을 return해주는 함수
 /* Fetch a value in the FAT table. */
 cluster_t
 fat_get (cluster_t clst) {
